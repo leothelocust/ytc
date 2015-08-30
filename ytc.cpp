@@ -290,6 +290,7 @@ void ytc_print_usage()
     std::cout << "       ytc current" << std::endl;
     std::cout << "       ytc repeat :toggles repeat-all" << std::endl;
     std::cout << "       ytc visual :toggles video" << std::endl;
+    std::cout << "       -host <hostname> (optional as the end)" << std::endl;
     exit(0);
 }
 
@@ -316,7 +317,7 @@ void ytc_verify_arguments(int argc, char **argv)
             ytc_print_usage();
 }
 
-void ytc_socket_setup()
+void ytc_socket_setup(std::string &host)
 {
     struct sockaddr_in srv_addr;
     struct hostent *server;
@@ -324,7 +325,7 @@ void ytc_socket_setup()
     if((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1)
         fatal("Could not create socket!");
 
-    server = gethostbyname("localhost");
+    server = gethostbyname(host.c_str());
     srv_addr.sin_family = AF_INET;
     srv_addr.sin_port = htons(YTD_PORT);
     std::memcpy(&srv_addr.sin_addr.s_addr, server->h_addr, server->h_length); 
@@ -337,10 +338,14 @@ void ytc_socket_setup()
 int main(int argc, char **argv)
 {
     ytc_verify_arguments(argc, argv);
-    ytc_socket_setup();
 
+    std::string host = "localhost";
+    if(strcmp(argv[argc-2], "-host") == 0)
+        host = argv[argc-1];
+
+    ytc_socket_setup(host);
     ytc_handle_command(argc, argv);
-
     shutdown(sockfd, 0);
+
     return 0;
 }
