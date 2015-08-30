@@ -233,6 +233,15 @@ void ytc_save(int argc, char **argv)
     }
 }
 
+void ytc_swap(int argc, char **argv)
+{
+    if(argc == 4)
+    {
+        std::string command = "swap " + std::string(argv[2]) + " " + std::string(argv[3]);
+        send(sockfd, command.c_str(), command.size(), 0);
+    }
+}
+
 void ytc_handle_command(int argc, char **argv)
 {
     if(strcmp(argv[1], "play") == 0)
@@ -261,6 +270,8 @@ void ytc_handle_command(int argc, char **argv)
         ytc_load(argc, argv);
     else if(strcmp(argv[1], "save") == 0)
         ytc_save(argc, argv);
+    else if(strcmp(argv[1], "swap") == 0)
+        ytc_swap(argc, argv);
 }
 
 void ytc_print_usage()
@@ -275,6 +286,7 @@ void ytc_print_usage()
     std::cout << "       ytc save <playlist>" << std::endl;
     std::cout << "       ytc list|ls" << std::endl;
     std::cout << "       ytc clear" << std::endl;
+    std::cout << "       ytc swap <index> <index>" << std::endl;
     std::cout << "       ytc current" << std::endl;
     std::cout << "       ytc repeat :toggles repeat-all" << std::endl;
     std::cout << "       ytc visual :toggles video" << std::endl;
@@ -299,7 +311,8 @@ void ytc_verify_arguments(int argc, char **argv)
         strcmp(argv[1], "repeat") != 0 && 
         strcmp(argv[1], "visual") != 0 && 
         strcmp(argv[1], "load") != 0 && 
-        strcmp(argv[1], "save") != 0)
+        strcmp(argv[1], "save") != 0 &&
+        strcmp(argv[1], "swap") != 0)
             ytc_print_usage();
 }
 
