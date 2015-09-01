@@ -144,7 +144,7 @@ void ytc_add(int argc, char **argv)
         }
 
         search += argv[i];
-        if(i < argc-2)
+        if(i < argc-1 && strcmp(argv[i+1], "-index") != 0)
             search += "%20";
     }
 
