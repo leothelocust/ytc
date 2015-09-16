@@ -2,14 +2,15 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include <curl/curl.h>
+#include <cstring>
+#include <cstdlib>
 
+#include <curl/curl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
-#include <cstdlib>
 
 #define YTD_PORT 2940
 
