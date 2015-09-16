@@ -313,19 +313,19 @@ void ytc_verify_arguments(int argc, char **argv)
     if(argc < 2)
         ytc_print_usage();
 
-    if (!ytc_strings_equal(argv[1], "add") && 
-        !ytc_strings_equal(argv[1], "play") && 
-        !ytc_strings_equal(argv[1], "stop") && 
-        !ytc_strings_equal(argv[1], "del") && 
+    if (!ytc_strings_equal(argv[1], "add") &&
+        !ytc_strings_equal(argv[1], "play") &&
+        !ytc_strings_equal(argv[1], "stop") &&
+        !ytc_strings_equal(argv[1], "del") &&
         !ytc_strings_equal(argv[1], "current") &&
-        !ytc_strings_equal(argv[1], "clear") && 
-        !ytc_strings_equal(argv[1], "list") && 
-        !ytc_strings_equal(argv[1], "ls") && 
-        !ytc_strings_equal(argv[1], "next") && 
-        !ytc_strings_equal(argv[1], "prev") && 
-        !ytc_strings_equal(argv[1], "repeat") && 
-        !ytc_strings_equal(argv[1], "visual") && 
-        !ytc_strings_equal(argv[1], "load") && 
+        !ytc_strings_equal(argv[1], "clear") &&
+        !ytc_strings_equal(argv[1], "list") &&
+        !ytc_strings_equal(argv[1], "ls") &&
+        !ytc_strings_equal(argv[1], "next") &&
+        !ytc_strings_equal(argv[1], "prev") &&
+        !ytc_strings_equal(argv[1], "repeat") &&
+        !ytc_strings_equal(argv[1], "visual") &&
+        !ytc_strings_equal(argv[1], "load") &&
         !ytc_strings_equal(argv[1], "save") &&
         !ytc_strings_equal(argv[1], "swap"))
             ytc_print_usage();
