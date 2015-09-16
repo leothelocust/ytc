@@ -9,8 +9,6 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
-
-#include <cstring>
 #include <cstdlib>
 
 #define YTD_PORT 2940
@@ -37,6 +35,22 @@ void fatal(const std::string &err)
 {
     std::cout << err << std::endl;
     exit(1);
+}
+
+bool ytc_strings_equal(const char *a, const char *b)
+{
+    bool result = (a == b);
+    if(a && b)
+    {
+        while(*a && *b && *a == *b)
+        {
+            ++a;
+            ++b;
+        }
+
+        result = ((*a == 0) && (*b == 0));
+    }
+    return result;
 }
 
 std::size_t write_to_string(char *ptr, std::size_t size, std::size_t count, std::string *stream)
@@ -137,14 +151,14 @@ void ytc_add(int argc, char **argv)
     int index = 0, i;
     for(i = 2; i < argc; ++i)
     {
-        if(strcmp(argv[i], "-index") == 0)
+        if(ytc_strings_equal(argv[i], "-index"))
         {
             index = atoi(argv[i+1]);
             break;
         }
 
         search += argv[i];
-        if(i < argc-1 && strcmp(argv[i+1], "-index") != 0)
+        if(i < argc-1 && !ytc_strings_equal(argv[i+1], "-index"))
             search += "%20";
     }
 
@@ -244,33 +258,33 @@ void ytc_swap(int argc, char **argv)
 
 void ytc_handle_command(int argc, char **argv)
 {
-    if(strcmp(argv[1], "play") == 0)
+    if(ytc_strings_equal(argv[1], "play"))
         ytc_play(argc, argv);
-    else if(strcmp(argv[1], "stop") == 0)
+    else if(ytc_strings_equal(argv[1], "stop"))
         ytc_stop();
-    else if(strcmp(argv[1], "add") == 0)
+    else if(ytc_strings_equal(argv[1], "add"))
         ytc_add(argc, argv);
-    else if(strcmp(argv[1], "del") == 0)
+    else if(ytc_strings_equal(argv[1], "del"))
         ytc_del(argc, argv);
-    else if(strcmp(argv[1], "clear") == 0)
+    else if(ytc_strings_equal(argv[1], "clear"))
         ytc_clear();
-    else if(strcmp(argv[1], "list") == 0 || strcmp(argv[1], "ls") == 0)
+    else if(ytc_strings_equal(argv[1], "list") || ytc_strings_equal(argv[1], "ls"))
         ytc_list();
-    else if(strcmp(argv[1], "current") == 0)
+    else if(ytc_strings_equal(argv[1], "current"))
         ytc_current();
-    else if(strcmp(argv[1], "visual") == 0)
+    else if(ytc_strings_equal(argv[1], "visual"))
         ytc_visual();
-    else if(strcmp(argv[1], "next") == 0)
+    else if(ytc_strings_equal(argv[1], "next"))
         ytc_next();
-    else if(strcmp(argv[1], "prev") == 0)
+    else if(ytc_strings_equal(argv[1], "prev"))
         ytc_prev();
-    else if(strcmp(argv[1], "repeat") == 0)
+    else if(ytc_strings_equal(argv[1], "repeat"))
         ytc_repeat();
-    else if(strcmp(argv[1], "load") == 0)
+    else if(ytc_strings_equal(argv[1], "load"))
         ytc_load(argc, argv);
-    else if(strcmp(argv[1], "save") == 0)
+    else if(ytc_strings_equal(argv[1], "save"))
         ytc_save(argc, argv);
-    else if(strcmp(argv[1], "swap") == 0)
+    else if(ytc_strings_equal(argv[1], "swap"))
         ytc_swap(argc, argv);
 }
 
@@ -299,21 +313,21 @@ void ytc_verify_arguments(int argc, char **argv)
     if(argc < 2)
         ytc_print_usage();
 
-    if (strcmp(argv[1], "add") != 0 && 
-        strcmp(argv[1], "play") != 0 && 
-        strcmp(argv[1], "stop") != 0 && 
-        strcmp(argv[1], "del") != 0 && 
-        strcmp(argv[1], "current") != 0 &&
-        strcmp(argv[1], "clear") != 0 && 
-        strcmp(argv[1], "list") != 0 && 
-        strcmp(argv[1], "ls") != 0 && 
-        strcmp(argv[1], "next") != 0 && 
-        strcmp(argv[1], "prev") != 0 && 
-        strcmp(argv[1], "repeat") != 0 && 
-        strcmp(argv[1], "visual") != 0 && 
-        strcmp(argv[1], "load") != 0 && 
-        strcmp(argv[1], "save") != 0 &&
-        strcmp(argv[1], "swap") != 0)
+    if (!ytc_strings_equal(argv[1], "add") && 
+        !ytc_strings_equal(argv[1], "play") && 
+        !ytc_strings_equal(argv[1], "stop") && 
+        !ytc_strings_equal(argv[1], "del") && 
+        !ytc_strings_equal(argv[1], "current") &&
+        !ytc_strings_equal(argv[1], "clear") && 
+        !ytc_strings_equal(argv[1], "list") && 
+        !ytc_strings_equal(argv[1], "ls") && 
+        !ytc_strings_equal(argv[1], "next") && 
+        !ytc_strings_equal(argv[1], "prev") && 
+        !ytc_strings_equal(argv[1], "repeat") && 
+        !ytc_strings_equal(argv[1], "visual") && 
+        !ytc_strings_equal(argv[1], "load") && 
+        !ytc_strings_equal(argv[1], "save") &&
+        !ytc_strings_equal(argv[1], "swap"))
             ytc_print_usage();
 }
 
@@ -340,7 +354,7 @@ int main(int argc, char **argv)
     ytc_verify_arguments(argc, argv);
 
     std::string host = "localhost";
-    if(strcmp(argv[argc-2], "-host") == 0)
+    if(ytc_strings_equal(argv[argc-2], "-host"))
         host = argv[argc-1];
 
     ytc_socket_setup(host);
