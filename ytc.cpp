@@ -202,9 +202,9 @@ void ytc_current()
     std::cout << current << std::endl;
 }
 
-void ytc_visual()
+void ytc_video()
 {
-    send(sockfd, "visual\n", 7, 0);
+    send(sockfd, "video\n", 6, 0);
     std::string status = ytc_read_line(sockfd);
     std::cout << status << std::endl;
 }
@@ -273,8 +273,8 @@ void ytc_handle_command(int argc, char **argv)
         ytc_list();
     else if(ytc_strings_equal(argv[1], "current"))
         ytc_current();
-    else if(ytc_strings_equal(argv[1], "visual"))
-        ytc_visual();
+    else if(ytc_strings_equal(argv[1], "video"))
+        ytc_video();
     else if(ytc_strings_equal(argv[1], "next"))
         ytc_next();
     else if(ytc_strings_equal(argv[1], "prev"))
@@ -304,7 +304,7 @@ void ytc_print_usage()
     std::cout << "       ytc swap <index> <index>" << std::endl;
     std::cout << "       ytc current" << std::endl;
     std::cout << "       ytc repeat :toggles repeat-all" << std::endl;
-    std::cout << "       ytc visual :toggles video" << std::endl;
+    std::cout << "       ytc video :toggles video" << std::endl;
     std::cout << "       -host <hostname> (optional as the end)" << std::endl;
     exit(0);
 }
@@ -325,7 +325,7 @@ void ytc_verify_arguments(int argc, char **argv)
         !ytc_strings_equal(argv[1], "next") &&
         !ytc_strings_equal(argv[1], "prev") &&
         !ytc_strings_equal(argv[1], "repeat") &&
-        !ytc_strings_equal(argv[1], "visual") &&
+        !ytc_strings_equal(argv[1], "video") &&
         !ytc_strings_equal(argv[1], "load") &&
         !ytc_strings_equal(argv[1], "save") &&
         !ytc_strings_equal(argv[1], "swap"))
