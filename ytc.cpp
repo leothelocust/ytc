@@ -137,6 +137,11 @@ void ytc_play(int argc, char **argv)
     send(sockfd, command.c_str(), command.size(), 0);
 }
 
+void ytc_pause()
+{
+    send(sockfd, "pause", 5, 0);
+}
+
 void ytc_stop()
 {
     send(sockfd, "stop", 4, 0);
@@ -214,6 +219,15 @@ void ytc_video()
     std::cout << status << std::endl;
 }
 
+void ytc_screen(int argc, char **argv)
+{
+    if(argc == 3)
+    {
+        std::string command = "screen " + std::string(argv[2]) + "\n";
+        send(sockfd, command.c_str(), command.size(), 0);
+    }
+}
+
 void ytc_next()
 {
     send(sockfd, "next", 4, 0);
@@ -227,6 +241,13 @@ void ytc_prev()
 void ytc_repeat()
 {
     send(sockfd, "repeat\n", 7, 0);
+    std::string status = ytc_read_line(sockfd);
+    std::cout << status << std::endl;
+}
+
+void ytc_fullscreen()
+{
+    send(sockfd, "fullscreen\n", 11, 0);
     std::string status = ytc_read_line(sockfd);
     std::cout << status << std::endl;
 }
@@ -266,6 +287,8 @@ void ytc_handle_command(int argc, char **argv)
 {
     if(ytc_strings_equal(argv[1], "play"))
         ytc_play(argc, argv);
+    else if(ytc_strings_equal(argv[1], "pause"))
+        ytc_pause();
     else if(ytc_strings_equal(argv[1], "stop"))
         ytc_stop();
     else if(ytc_strings_equal(argv[1], "add"))
@@ -286,6 +309,10 @@ void ytc_handle_command(int argc, char **argv)
         ytc_prev();
     else if(ytc_strings_equal(argv[1], "repeat"))
         ytc_repeat();
+    else if(ytc_strings_equal(argv[1], "screen"))
+        ytc_screen(argc, argv);
+    else if(ytc_strings_equal(argv[1], "fullscreen"))
+        ytc_fullscreen();
     else if(ytc_strings_equal(argv[1], "load"))
         ytc_load(argc, argv);
     else if(ytc_strings_equal(argv[1], "save"))
@@ -299,20 +326,23 @@ void ytc_handle_command(int argc, char **argv)
 void ytc_print_usage()
 {
     std::cout << "Usage: ytc play [index] (optional)" << std::endl;
+    std::cout << "       ytc pause" << std::endl;
     std::cout << "       ytc stop" << std::endl;
     std::cout << "       ytc next" << std::endl;
     std::cout << "       ytc prev" << std::endl;
     std::cout << "       ytc add <search> [-index <num>] (optional)" << std::endl;
     std::cout << "       ytc del [index] (optional)" << std::endl;
+    std::cout << "       ytc current" << std::endl;
     std::cout << "       ytc load <playlist>" << std::endl;
     std::cout << "       ytc save <playlist>" << std::endl;
     std::cout << "       ytc shuffle" << std::endl;
     std::cout << "       ytc list|ls" << std::endl;
     std::cout << "       ytc clear" << std::endl;
     std::cout << "       ytc swap <index> <index>" << std::endl;
-    std::cout << "       ytc current" << std::endl;
     std::cout << "       ytc repeat :toggles repeat-all" << std::endl;
     std::cout << "       ytc video :toggles video" << std::endl;
+    std::cout << "       ytc fullscreen :toggles fullscreen video" << std::endl;
+    std::cout << "       ytc screen <index>" << std::endl;
     std::cout << "       -host <hostname> (optional as the end)" << std::endl;
     exit(0);
 }
@@ -322,22 +352,25 @@ void ytc_verify_arguments(int argc, char **argv)
     if(argc < 2)
         ytc_print_usage();
 
-    if (!ytc_strings_equal(argv[1], "add") &&
-        !ytc_strings_equal(argv[1], "play") &&
+    if (!ytc_strings_equal(argv[1], "play") &&
+        !ytc_strings_equal(argv[1], "pause") &&
         !ytc_strings_equal(argv[1], "stop") &&
+        !ytc_strings_equal(argv[1], "prev") &&
+        !ytc_strings_equal(argv[1], "next") &&
+        !ytc_strings_equal(argv[1], "add") &&
         !ytc_strings_equal(argv[1], "del") &&
         !ytc_strings_equal(argv[1], "current") &&
         !ytc_strings_equal(argv[1], "clear") &&
         !ytc_strings_equal(argv[1], "list") &&
         !ytc_strings_equal(argv[1], "ls") &&
-        !ytc_strings_equal(argv[1], "next") &&
-        !ytc_strings_equal(argv[1], "prev") &&
-        !ytc_strings_equal(argv[1], "repeat") &&
-        !ytc_strings_equal(argv[1], "video") &&
         !ytc_strings_equal(argv[1], "load") &&
         !ytc_strings_equal(argv[1], "save") &&
+        !ytc_strings_equal(argv[1], "shuffle") &&
         !ytc_strings_equal(argv[1], "swap") &&
-        !ytc_strings_equal(argv[1], "shuffle"))
+        !ytc_strings_equal(argv[1], "repeat") &&
+        !ytc_strings_equal(argv[1], "video") &&
+        !ytc_strings_equal(argv[1], "fullscreen") &&
+        !ytc_strings_equal(argv[1], "screen"))
             ytc_print_usage();
 }
 
