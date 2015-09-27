@@ -188,6 +188,11 @@ void ytc_clear()
     send(sockfd, "clear", 5, 0);
 }
 
+void ytc_shuffle()
+{
+    send(sockfd, "shuffle", 7, 0);
+}
+
 void ytc_list()
 {
     send(sockfd, "list\n", 5, 0);
@@ -287,6 +292,8 @@ void ytc_handle_command(int argc, char **argv)
         ytc_save(argc, argv);
     else if(ytc_strings_equal(argv[1], "swap"))
         ytc_swap(argc, argv);
+    else if(ytc_strings_equal(argv[1], "shuffle"))
+        ytc_shuffle();
 }
 
 void ytc_print_usage()
@@ -299,6 +306,7 @@ void ytc_print_usage()
     std::cout << "       ytc del [index] (optional)" << std::endl;
     std::cout << "       ytc load <playlist>" << std::endl;
     std::cout << "       ytc save <playlist>" << std::endl;
+    std::cout << "       ytc shuffle" << std::endl;
     std::cout << "       ytc list|ls" << std::endl;
     std::cout << "       ytc clear" << std::endl;
     std::cout << "       ytc swap <index> <index>" << std::endl;
@@ -328,7 +336,8 @@ void ytc_verify_arguments(int argc, char **argv)
         !ytc_strings_equal(argv[1], "video") &&
         !ytc_strings_equal(argv[1], "load") &&
         !ytc_strings_equal(argv[1], "save") &&
-        !ytc_strings_equal(argv[1], "swap"))
+        !ytc_strings_equal(argv[1], "swap") &&
+        !ytc_strings_equal(argv[1], "shuffle"))
             ytc_print_usage();
 }
 
