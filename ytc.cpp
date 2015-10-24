@@ -27,6 +27,7 @@ static std::string response;
 
 static std::string youtubePrefix = "http://youtube.com/watch?v=";
 static std::string url = "https://www.googleapis.com/youtube/v3/search";
+static std::string playlistUrl = "https://www.googleapis.com/youtube/v3/playlistItems";
 static std::string part = "?part=id,snippet";
 static std::string maxResults = "&maxResults=50";
 static std::string authKey = "&key=GOOGLEAPI KEY";
@@ -145,6 +146,74 @@ void ytc_pause()
 void ytc_stop()
 {
     send(sockfd, "stop", 4, 0);
+}
+
+void parse_youtube_playlist(std::vector<std::string> &list, std::string playlistID, std::string pageToken)
+{
+    std::string query = playlistUrl + part + maxResults + authKey + "&playlistId=" + playlistID + "&pageToken=" + pageToken;
+    curl_easy_setopt(curl, CURLOPT_URL, query.c_str());
+    res = curl_easy_perform(curl);
+
+    std::string NextPageToken = pageToken;
+    std::stringstream ss(response);
+    response = "";
+    std::string curline;
+    int id_cnt = 0, title_cnt = 0;
+
+    while(std::getline(ss, curline))
+    {
+        if(curline.find("\"nextPageToken\":") != std::string::npos)
+        {
+            NextPageToken = ytc_split_string(curline)[3];
+        }
+
+        if (curline.find("\"title\":") != std::string::npos)
+        {
+            title_cnt += 1;
+            list.push_back(curline);
+        }
+
+        if(curline.find("\"videoId\":") != std::string::npos)
+        {
+            if(id_cnt + 1 <= title_cnt)
+            {
+                id_cnt += 1;
+                list.push_back(curline);
+            }
+        }
+    }
+
+    if(NextPageToken != pageToken)
+    {
+        parse_youtube_playlist(list, playlistID, NextPageToken);
+    }
+}
+
+void ytc_add_from_youtube_playlist(int argc, char **argv)
+{
+    ytc_init_curl();    
+
+    std::string playlistID = std::string(argv[2]);
+    std::vector<yt_entry> videos;
+    std::vector<std::string> list;
+    parse_youtube_playlist(list, playlistID, "");
+
+    for(int i = 0; i < list.size(); i+=2)
+    {
+        yt_entry entry;
+        entry.title = ytc_split_string(list[i])[3];
+        entry.url = youtubePrefix + ytc_split_string(list[i+1])[3];
+        videos.push_back(entry);
+    }
+
+    std::string selected = "addlist";
+    for(int i = 0; i < videos.size(); ++i)
+    {
+        selected += " " + videos[i].url + " " + videos[i].title + '\0';
+    }
+    send(sockfd, selected.c_str(), selected.size(), 0);
+
+    curl_easy_cleanup(curl);
 }
 
 void ytc_add(int argc, char **argv)
@@ -293,6 +362,8 @@ void ytc_handle_command(int argc, char **argv)
         ytc_stop();
     else if(ytc_strings_equal(argv[1], "add"))
         ytc_add(argc, argv);
+    else if(ytc_strings_equal(argv[1], "addlist"))
+        ytc_add_from_youtube_playlist(argc, argv);
     else if(ytc_strings_equal(argv[1], "del"))
         ytc_del(argc, argv);
     else if(ytc_strings_equal(argv[1], "clear"))
@@ -358,6 +429,7 @@ void ytc_verify_arguments(int argc, char **argv)
         !ytc_strings_equal(argv[1], "prev") &&
         !ytc_strings_equal(argv[1], "next") &&
         !ytc_strings_equal(argv[1], "add") &&
+        !ytc_strings_equal(argv[1], "addlist") &&
         !ytc_strings_equal(argv[1], "del") &&
         !ytc_strings_equal(argv[1], "current") &&
         !ytc_strings_equal(argv[1], "clear") &&
