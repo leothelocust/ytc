@@ -343,6 +343,16 @@ void ytc_save(int argc, char **argv)
     }
 }
 
+void ytc_volup()
+{
+    send(sockfd, "volup", 5, 0);
+}
+
+void ytc_voldown()
+{
+    send(sockfd, "voldn", 5, 0);
+}
+
 void ytc_swap(int argc, char **argv)
 {
     if(argc == 4)
@@ -368,6 +378,10 @@ void ytc_handle_command(int argc, char **argv)
         ytc_del(argc, argv);
     else if(ytc_strings_equal(argv[1], "clear"))
         ytc_clear();
+    else if(ytc_strings_equal(argv[1], "volup"))
+        ytc_volup();
+    else if(ytc_strings_equal(argv[1], "voldown") || ytc_strings_equal(argv[1], "voldn"))
+        ytc_voldown();
     else if(ytc_strings_equal(argv[1], "list") || ytc_strings_equal(argv[1], "ls"))
         ytc_list();
     else if(ytc_strings_equal(argv[1], "current"))
@@ -403,6 +417,8 @@ void ytc_print_usage()
     std::cout << "       ytc prev" << std::endl;
     std::cout << "       ytc add <search> [-index <num>] (optional)" << std::endl;
     std::cout << "       ytc del [index] (optional)" << std::endl;
+    std::cout << "       ytc volup" << std::endl;
+    std::cout << "       ytc voldown|voldn" << std::endl;
     std::cout << "       ytc current" << std::endl;
     std::cout << "       ytc load <playlist>" << std::endl;
     std::cout << "       ytc save <playlist>" << std::endl;
@@ -433,6 +449,9 @@ void ytc_verify_arguments(int argc, char **argv)
         !ytc_strings_equal(argv[1], "del") &&
         !ytc_strings_equal(argv[1], "current") &&
         !ytc_strings_equal(argv[1], "clear") &&
+        !ytc_strings_equal(argv[1], "volup") &&
+        !ytc_strings_equal(argv[1], "voldown") &&
+        !ytc_strings_equal(argv[1], "voldn") &&
         !ytc_strings_equal(argv[1], "list") &&
         !ytc_strings_equal(argv[1], "ls") &&
         !ytc_strings_equal(argv[1], "load") &&
