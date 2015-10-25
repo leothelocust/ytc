@@ -343,6 +343,16 @@ void ytc_save(int argc, char **argv)
     }
 }
 
+void ytc_seekfw()
+{
+    send(sockfd, "seekfw", 6, 0);
+}
+
+void ytc_seekbk()
+{
+    send(sockfd, "seekbk", 6, 0);
+}
+
 void ytc_volup()
 {
     send(sockfd, "volup", 5, 0);
@@ -378,6 +388,10 @@ void ytc_handle_command(int argc, char **argv)
         ytc_del(argc, argv);
     else if(ytc_strings_equal(argv[1], "clear"))
         ytc_clear();
+    else if(ytc_strings_equal(argv[1], "seekfw"))
+        ytc_seekfw();
+    else if(ytc_strings_equal(argv[1], "seekbk"))
+        ytc_seekbk();
     else if(ytc_strings_equal(argv[1], "volup"))
         ytc_volup();
     else if(ytc_strings_equal(argv[1], "voldown") || ytc_strings_equal(argv[1], "voldn"))
@@ -451,6 +465,8 @@ void ytc_verify_arguments(int argc, char **argv)
         !ytc_strings_equal(argv[1], "clear") &&
         !ytc_strings_equal(argv[1], "volup") &&
         !ytc_strings_equal(argv[1], "voldown") &&
+        !ytc_strings_equal(argv[1], "seekfw") &&
+        !ytc_strings_equal(argv[1], "seekbk") &&
         !ytc_strings_equal(argv[1], "voldn") &&
         !ytc_strings_equal(argv[1], "list") &&
         !ytc_strings_equal(argv[1], "ls") &&
