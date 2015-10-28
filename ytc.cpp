@@ -363,6 +363,33 @@ void ytc_voldown()
     send(sockfd, "voldn", 5, 0);
 }
 
+void ytc_toggle_fav()
+{
+    send(sockfd, "fav\n", 4, 0);
+    std::string status = ytc_read_line(sockfd);
+    std::cout << status << std::endl;
+}
+
+void ytc_mark_fav()
+{
+    send(sockfd, "mkfav", 5, 0);
+}
+
+void ytc_unmark_fav(int argc, char **argv)
+{
+    std::string command = "rmfav";
+    if(argc == 3)
+        command += " " + std::string(argv[2]);
+    send(sockfd, command.c_str(), command.size(), 0);
+}
+
+void ytc_list_fav()
+{
+    send(sockfd, "lsfav\n", 6, 0);
+    std::string playlist = ytc_read_line(sockfd);
+    std::cout << playlist << std::endl;
+}
+
 void ytc_swap(int argc, char **argv)
 {
     if(argc == 4)
@@ -388,6 +415,14 @@ void ytc_handle_command(int argc, char **argv)
         ytc_del(argc, argv);
     else if(ytc_strings_equal(argv[1], "clear"))
         ytc_clear();
+    else if(ytc_strings_equal(argv[1], "fav"))
+        ytc_toggle_fav();
+    else if(ytc_strings_equal(argv[1], "mkfav"))
+        ytc_mark_fav();
+    else if(ytc_strings_equal(argv[1], "rmfav"))
+        ytc_unmark_fav(argc, argv);
+    else if(ytc_strings_equal(argv[1], "lsfav"))
+        ytc_list_fav();
     else if(ytc_strings_equal(argv[1], "seekfw"))
         ytc_seekfw();
     else if(ytc_strings_equal(argv[1], "seekbk"))
@@ -396,7 +431,7 @@ void ytc_handle_command(int argc, char **argv)
         ytc_volup();
     else if(ytc_strings_equal(argv[1], "voldown") || ytc_strings_equal(argv[1], "voldn"))
         ytc_voldown();
-    else if(ytc_strings_equal(argv[1], "list") || ytc_strings_equal(argv[1], "ls"))
+    else if(ytc_strings_equal(argv[1], "ls"))
         ytc_list();
     else if(ytc_strings_equal(argv[1], "current"))
         ytc_current();
@@ -427,19 +462,26 @@ void ytc_print_usage()
     std::cout << "Usage: ytc play [index] (optional)" << std::endl;
     std::cout << "       ytc pause" << std::endl;
     std::cout << "       ytc stop" << std::endl;
-    std::cout << "       ytc next" << std::endl;
     std::cout << "       ytc prev" << std::endl;
+    std::cout << "       ytc next" << std::endl;
+    std::cout << "       ytc seekbk" << std::endl;
+    std::cout << "       ytc seekfw" << std::endl;
     std::cout << "       ytc add <search> [-index <num>] (optional)" << std::endl;
+    std::cout << "       ytc addlist <youtube list id>" << std::endl;
     std::cout << "       ytc del [index] (optional)" << std::endl;
+    std::cout << "       ytc mkfav" << std::endl;
+    std::cout << "       ytc rmfav <index>" << std::endl;
     std::cout << "       ytc volup" << std::endl;
     std::cout << "       ytc voldown|voldn" << std::endl;
     std::cout << "       ytc current" << std::endl;
     std::cout << "       ytc load <playlist>" << std::endl;
     std::cout << "       ytc save <playlist>" << std::endl;
     std::cout << "       ytc shuffle" << std::endl;
-    std::cout << "       ytc list|ls" << std::endl;
+    std::cout << "       ytc lsfav" << std::endl;
+    std::cout << "       ytc ls" << std::endl;
     std::cout << "       ytc clear" << std::endl;
     std::cout << "       ytc swap <index> <index>" << std::endl;
+    std::cout << "       ytc fav :toggles playback of favorites" << std::endl;
     std::cout << "       ytc repeat :toggles repeat-all" << std::endl;
     std::cout << "       ytc video :toggles video" << std::endl;
     std::cout << "       ytc fullscreen :toggles fullscreen video" << std::endl;
@@ -461,14 +503,17 @@ void ytc_verify_arguments(int argc, char **argv)
         !ytc_strings_equal(argv[1], "add") &&
         !ytc_strings_equal(argv[1], "addlist") &&
         !ytc_strings_equal(argv[1], "del") &&
+        !ytc_strings_equal(argv[1], "fav") &&
+        !ytc_strings_equal(argv[1], "mkfav") &&
+        !ytc_strings_equal(argv[1], "rmfav") &&
+        !ytc_strings_equal(argv[1], "lsfav") &&
         !ytc_strings_equal(argv[1], "current") &&
         !ytc_strings_equal(argv[1], "clear") &&
         !ytc_strings_equal(argv[1], "volup") &&
         !ytc_strings_equal(argv[1], "voldown") &&
+        !ytc_strings_equal(argv[1], "voldn") &&
         !ytc_strings_equal(argv[1], "seekfw") &&
         !ytc_strings_equal(argv[1], "seekbk") &&
-        !ytc_strings_equal(argv[1], "voldn") &&
-        !ytc_strings_equal(argv[1], "list") &&
         !ytc_strings_equal(argv[1], "ls") &&
         !ytc_strings_equal(argv[1], "load") &&
         !ytc_strings_equal(argv[1], "save") &&
